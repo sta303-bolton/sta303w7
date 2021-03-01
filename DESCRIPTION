@@ -6,7 +6,8 @@ Author: Liza Bolton
 Maintainer: Liza Bolton <liza.bolton@utoronto.ca>
 Description: Contains templates for the distribution cheat sheet and challenger case study.
 License: GPL-3
-Depends: tidyverse,
+Depends: dplyr,
+          magrittr,
           SMPracticals
 Encoding: UTF-8
 LazyData: true
