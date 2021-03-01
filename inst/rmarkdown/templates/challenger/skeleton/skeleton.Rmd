@@ -31,7 +31,7 @@ shuttle[1:4,]
 - `m`: number of rings
 - `r`: number of damaged rings
 
-Thus we have a situation where we are interested in the number of successes out of a fixed number of trials. Hopefully your memories of the Binomial distibution are being triggered by that language.
+Thus we have a situation where we are interested in the number of successes out of a fixed number of trials. Hopefully your memories of the Binomial distribution are being triggered by that language.
 
 ```{r shuttlePlot, echo=TRUE, fig.height=2}
 # Base R plot
@@ -147,7 +147,7 @@ quantile(shuttle$pressure)
 
 - Currently the intercept is log-odds when temperature = 0 and pressure = 0
 - centre the covariates so the intercept refers to: 
-  - temperature = 70 (degrees Farenheit)
+  - temperature = 70 (degrees Fahrenheit)
   - pressure = 200 (pounds per square inch)
 
 
@@ -184,7 +184,7 @@ round(exp(par_table),3)
 round(exp(par_table[1,'est']) / (1+exp(par_table[1,'est'])), 3)
 ```
 
-- Each degree increase in temperature (in Farenheit) decreases the odds of damage by
+- Each degree increase in temperature (in Fahrenheit) decreases the odds of damage by
 (in percent)
 ```{r shuttleTemperaturePercent, echo=TRUE}
 round(100*(1-exp(par_table[2,'est']) ), 3)

@@ -16,7 +16,7 @@ set.seed(303)
 
 Complete this 'cheat sheet' to consolidate what you've learned from the reading, and to practice using R markdown's LaTeX formatting for equations. You don't have to complete this in R markdown, if you would rather write it by hand, but being able to format mathematical equations help prepare you for your final project.
 
-You should be able to complete most of this from the reading, buy may need to call on knowledge from previous courses and/or read some help documention for R functions.
+You should be able to complete most of this from the reading, buy may need to call on knowledge from previous courses and/or read some help documentation for R functions.
 
 # Discrete random variables
 Link: [3.3 Discrete random variables](https://bookdown.org/roback/bookdown-BeyondMLR/ch-distthry.html#discrete-random-variables)
