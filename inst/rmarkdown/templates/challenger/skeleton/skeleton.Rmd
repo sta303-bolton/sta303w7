@@ -1,0 +1,192 @@
+---
+title: "Challenger case study"
+author: "Your name here"
+subtitle: STA303/1002 Winter 2021
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+This template runs through the same analysis as the Challenger shuttle disaster case study.
+
+## Shuttle data
+
+On January 28, 1986, the Space Shuttle Challenger broke apart 73 seconds into its flight, killing all seven crew members. The spacecraft **disintegrated** over the Atlantic Ocean. The disintegration of the vehicle began after a joint in its right rocket booster failed at liftoff. The failure was caused by the **failure of O-ring seals** used in the joint that were not designed to handle the unusually cold conditions that existed at this launch.
+
+We will look at a data set about the number of rubber O-rings showing thermal distress for 23 flights of the space shuttle, with the ambient temperature and pressure at which tests on the putty next to the rings were performed.
+
+
+```{r setup, message=FALSE}
+library(tidyverse)
+```
+
+```{r shuttle, echo=TRUE}
+# You may need to install this package to get the data
+# install.packages("SMPracticals")
+data('shuttle', package='SMPracticals')
+rownames(shuttle) <- as.character(rownames(shuttle))
+shuttle[1:4,]
+```
+
+- `m`: number of rings
+- `r`: number of damaged rings
+
+Thus we have a situation where we are interested in the number of successes out of a fixed number of trials. Hopefully your memories of the Binomial distibution are being triggered by that language.
+
+```{r shuttlePlot, echo=TRUE, fig.height=2}
+# Base R plot
+# plot(shuttle$temperature, shuttle$r/shuttle$m)
+
+# ggplot
+shuttle %>% 
+  ggplot(aes(x = temperature, y = r/m)) +
+  geom_point(size = 4) +
+  theme_minimal()
+```
+
+
+## Are shuttle rings more likely to get damaged in cold weather? 
+
+We can think of __m__ as the number of trials, and __r__ as the number of "successes". (It feels weird to call damage a success, but it is our outcome of interest, so we treat it as such.)
+
+\begin{align*}
+Y_i \sim & \text{Binomial}(N_i, \mu_i)\\
+\log\left(\frac{\mu_i}{1-\mu_i}\right) = & X_i \beta
+\end{align*}
+
+- m: number of rings, $N_i$
+- r: number of damaged rings $Y_i$
+- pressure, temperature: covariates $X_i$
+- $\mu_i$: probability of a ring becoming damaged given $X_i$ 
+- $\beta_{\text{temperature}}$: parameter of interest
+
+
+## Inference: parameter estimation
+
+\begin{align*}
+Y_i \sim & G (\mu_i, \theta)\\
+h(\mu_i) = & X_i \beta\\
+\pi(Y_1 ... Y_N; \beta, \theta)  = & 
+\prod_{i=1}^N f_G (Y_i ; \mu_i, \theta)\\
+\log L(\beta, \theta ; y_1 ... y_N) = &
+\sum_{i=1}^N \log f_G (y_i; \mu_i, \theta)
+\end{align*}
+
+
+- The $Y_i$ are *independently distributed*
+- **Joint density** $\pi$ of random variables $(Y_1  ...Y_N)$ is the product of the marginal
+densities $f_G$.
+- **Likelihood function** $L$ given observed data $y_1 ... y_N$ is a function of the parameters.
+- **Maximum Likelihood Estimation**:
+$$
+\hat\beta, \hat\theta = \text{argmax}_{\beta,\theta}L(\beta, \theta ; y_1 \ldots y_N)
+$$
+- The best parameters are those which are most likely to produce the observed
+  data
+
+## Shuttle example in R
+
+- `glm` works like `lm` with a `family` argument.
+- Binomial models can take two types of inputs:
+  - If, as in this case, we have groups of trials, we need our response to be a matrix with two columns: `y` and `N-y`.
+  - If our `y` is a single 0/1 (or otherwise binary categorical variable) then we can set it up as usual, just a single column.
+
+```{r shuttleEx, echo=TRUE, tidy=FALSE}
+shuttle$notDamaged <- shuttle$m - shuttle$r
+shuttle$y <- as.matrix(shuttle[,c('r','notDamaged')])
+shuttleFit <- glm(y ~ temperature + pressure, 
+  family=binomial(link='logit'), data=shuttle)
+shuttleFit$coef
+```
+
+
+## Summary of fit
+
+
+```{r shuttleSummary, echo=TRUE}
+summary(shuttleFit)
+```
+
+```{r}
+confint(shuttleFit)
+```
+
+There is no evidence that pressure is significantly associated with failure of O-rings...but how do we interpret these values?
+
+## Interpreting logistic models
+
+\begin{align*}
+Y_i \sim & \text{Binomial}(N_i, \mu_i)\\
+\log\left(\frac{\mu_i}{1-\mu_i}\right) = & \sum_{p=1}^P X_{ip} \beta_p\\
+\left(\frac{\mu_i}{1-\mu_i}\right) = & \prod_{p=1}^P \exp(\beta_p)^{X_{ip}}
+\end{align*}
+
+- $\mu_i$ is a probability
+- $\log[\mu_i / (1-\mu_i)]$ is a log-odds
+- $\mu_i / (1-\mu_i)$ is an odds
+- If $\mu_i \approx 0$, then $\mu_i \approx \mu_i / (1-\mu_i)$ 
+
+
+\begin{align*}
+\beta_q = &\log\left(\frac{\mu_2}{1-\mu_2}\right) - \log\left(\frac{\mu_1}{1-\mu_1}\right) \\
+\exp(\beta_q) = & \left(\frac{\mu_2}{1-\mu_2}\right) \left/ \left(\frac{\mu_1}{1-\mu_1}\right)\right. \\
+\end{align*}
+
+- $\beta_q$ is the log-odds ratio
+- $\exp(\beta_q)$ is the odds ratio
+- $\exp(\text{intercept})$ is the baseline odds, when $X_{1} \ldots X_{n} = 0$.
+
+
+## Centring parameters
+
+```{r shuttleC, echo=TRUE}
+quantile(shuttle$temperature)
+quantile(shuttle$pressure)
+```
+
+
+- Currently the intercept is log-odds when temperature = 0 and pressure = 0
+- centre the covariates so the intercept refers to: 
+  - temperature = 70 (degrees Farenheit)
+  - pressure = 200 (pounds per square inch)
+
+
+```{r shuttleFitC, echo=TRUE}
+shuttle$temperatureC <- shuttle$temperature  - 70
+shuttle$pressureC <-  shuttle$pressure - 200
+shuttleFit2 <-  glm(y ~ temperatureC + pressureC, family='binomial', data=shuttle)
+```
+
+
+## Shuttle odds parameters
+
+```{r shuttleSummaryExpSetup, echo=TRUE, tidy=FALSE}
+par_table = cbind(est = summary(
+  shuttleFit2)$coef[,1],
+  confint(shuttleFit2))
+rownames(par_table)[1]= "Baseline"
+```
+
+
+```{r shuttleSummaryExp, echo=TRUE}
+round(exp(par_table),3)
+```
+
+**Table 1**: MLEs of baseline odds and odds ratios, with  95% confidence intervals.
+
+
+## Interpreting shuttle parameters
+
+- The odds of a ring being damaged when temperature = 70 and pressure = 200  is `r signif(exp(par_table[1,'est']), 3)`, which corresponds to a probability of
+
+
+```{r shuttleBaselineProb, echo=TRUE, tidy=FALSE}
+round(exp(par_table[1,'est']) / (1+exp(par_table[1,'est'])), 3)
+```
+
+- Each degree increase in temperature (in Farenheit) decreases the odds of damage by
+(in percent)
+```{r shuttleTemperaturePercent, echo=TRUE}
+round(100*(1-exp(par_table[2,'est']) ), 3)
+```
+
