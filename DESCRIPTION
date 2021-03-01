@@ -1,11 +1,10 @@
 Package: sta303w7
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Materials For Week 7 fo STA303 WInter 2020
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Liza Bolton
+Maintainer: Liza Bolton <liza.bolton@utoronto.ca>
+Description: Contains templates for the distribution cheat sheet and challenger case study.
+License: GPL-3
 Encoding: UTF-8
 LazyData: true

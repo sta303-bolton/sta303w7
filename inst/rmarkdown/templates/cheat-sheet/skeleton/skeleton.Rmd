@@ -1,0 +1,269 @@
+---
+title: "Distributions cheat sheet template"
+subtitle: "STA303/1002 Winter 2021"
+author: "Your name here"
+output:
+  pdf_document:
+    toc: true
+    toc_depth: 2
+  urlcolor: blue
+---
+
+```{r, message = FALSE, echo=FALSE}
+library(tidyverse)
+set.seed(303)
+```
+
+Complete this 'cheat sheet' to consolidate what you've learned from the reading, and to practice using R markdown's LaTeX formatting for equations. You don't have to complete this in R markdown, if you would rather write it by hand, but being able to format mathematical equations help prepare you for your final project.
+
+You should be able to complete most of this from the reading, buy may need to call on knowledge from previous courses and/or read some help documention for R functions.
+
+# Discrete random variables
+Link: [3.3 Discrete random variables](https://bookdown.org/roback/bookdown-BeyondMLR/ch-distthry.html#discrete-random-variables)
+
+## Binary or Bernoulli distributions
+Link: [3.3.1 Binary Random Variable](https://bookdown.org/roback/bookdown-BeyondMLR/ch-distthry.html#sec-binary)
+
+* What is the probability distribution function? 
+
+$$P(Y = y) = p^y(1-p)^{1-y} \ \text{for} \ y \in \{0, 1\} $$
+
+* What is/are the parameter(s)?
+
+There is one parameter for the Bernoulli distribution. It is $p$, the probability that $y$ takes the value 1. $y$ takes the value 0 with probability $1-p$.
+
+* How do changes to the the parameter(s) effect the response?
+
+Higher values of $p$ mean a great chance of getting a 1 (a 'success').
+
+* What are the __mean__ and __variance__?
+
+Mean: $\text{E}(Y) = p$
+
+Variance: $var(Y) = p(1-p)$
+
+* What values can your response variable, $y$, take?
+
+Y can only take the value 0 or 1.
+
+* When might you use this distribution? Come up with an example.
+
+When there is just one trial with a binary outcome. Like one person's COVID test, where $p$ is the probability they test positive on the test.
+
+* What R code can you use to explore the density of this distribution?
+
+I wouldn't usually 'code' a Bernoulli distribution, but it IS one case of the binomial, so the below gives you what you would suspect.
+
+```{r}
+dbinom(1, size = 1, prob = .25)
+```
+
+* Can you simulate the distribution? Play with the parameters for yourself.
+
+Just one observation, so boring, but sure...
+
+```{r}
+tibble(p = 0.25) %>% 
+  ggplot(aes(x = p)) +
+  geom_bar(width = 0.01) +
+  xlim(0,1) +
+  labs(title = "A very boring plot of a single probability") +
+  theme_minimal()
+```
+
+## Binomial
+Link: [3.3.2 Binomial Random Variable](https://bookdown.org/roback/bookdown-BeyondMLR/ch-distthry.html#sec-binomial)
+
+* What is the probability distribution function? 
+
+* What is/are the parameter(s)?
+
+* How do changes to the the parameter(s) effect the response?
+
+* What are the __mean__ and __variance__?
+
+* What values can your response variable take?
+
+* When might you use this distribution? Come up with an example.
+
+* What R code can you use to explore the density of this distribution?
+
+```{r}
+
+```
+
+* Can you simulate the distribution?
+
+`rbinom()` generates random observations from the binomial distribution, with the parameters you specify. `rbinom(n = 1000, size = 10, p = 0.5)` means you want 1000 observations, each of 10 trials, with equal probability of getting a 0 or a 1 on each trial.
+
+```{r}
+# simulate the data and store it in a convenient way to plot
+rand_bin <- tibble(y = rbinom(n = 1000, size = 10, p = 0.5))
+
+# plot
+rand_bin %>% 
+  ggplot(aes(x = factor(y))) +
+  geom_bar() + # appropriate for discrte count of successes
+  labs(title = "Number of successes in 10 trials",
+       subtitle = "1000 simulations",
+         x = "Number of successes out of 10 trials",
+       y = "Count") +
+  theme_minimal()
+```
+
+## Negative binomial
+Link: [3.3.4 Negative Binomial Random Variable](https://bookdown.org/roback/bookdown-BeyondMLR/ch-distthry.html#negative-binomial-random-variable)
+
+* What is the probability distribution function? 
+
+* What is/are the parameter(s)?
+
+* What are the __mean__ and __variance__?
+
+* What values can your response variable take?
+
+* When might you use this distribution? Come up with an example.
+
+* What R code can you use to explore this distribution?
+
+`dnbinom()` is the function to look at. Run ?dnbinom in your console for the help information. See the reading for more.
+
+```{r}
+
+```
+
+* Can you simulate the distribution? Play with the parameters for yourself.
+
+`rnbinom()` is the function to look at. Run ?rnbinom in your console for the help information.
+
+```{r}
+# simulate the data and store it in a convenient way to plot
+rand_negbin <- tibble(y = rnbinom(n = 1000, size = 3, p = 0.35))
+
+# plot
+rand_negbin %>% 
+  ggplot(aes(x = factor(y))) +
+  geom_bar() + # appropriate for discrte count of successes
+  labs(title = "Number of failures before the rth success",
+       subtitle = "1000 simulations",
+         x = "Number of failures",
+       y = "Count") +
+  theme_minimal()
+```
+
+
+
+# Continuous random variables
+Link: [3.4 Continuous random variables](https://bookdown.org/roback/bookdown-BeyondMLR/ch-distthry.html#continuous-random-variables)
+
+## Gamma
+Link: [3.4.2 Gamma Random Variable](https://bookdown.org/roback/bookdown-BeyondMLR/ch-distthry.html#gamma-random-variable)
+
+* What is the probability distribution function? 
+* What is/are the parameter(s)?
+* How do changes to the the parameter(s) effect the response?
+* What are the __mean__ and __variance__?
+* What values can your response variable take?
+* When might you use this distribution? Come up with an example.
+* What R code can you use to explore the density of this distribution?
+
+```{r}
+
+```
+
+* Can you simulate the distribution? Play with the parameters for yourself.
+
+Can you follow the patterns you've seen above to get the right function to use here?
+
+```{r}
+
+```
+
+## Beta
+Link: [3.4.4 Beta Random Variable](https://bookdown.org/roback/bookdown-BeyondMLR/ch-distthry.html#beta-random-variable)
+
+* What is the probability distribution function? 
+* What is/are the parameter(s)?
+* How do changes to the the parameter(s) effect the response?
+* What are the __mean__ and __variance__?
+* What values can your response variable take?
+* When might you use this distribution? Come up with an example.
+* What R code can you use to explore the density of this distribution?
+
+```{r}
+
+```
+
+* Can you simulate the distribution? Play with the parameters for yourself.
+
+Can you follow the patterns you've seen above to get the right function to use here?
+
+```{r}
+
+```
+
+# Distributions used in testing
+* [3.5 Distributions Used in Testing](https://bookdown.org/roback/bookdown-BeyondMLR/ch-distthry.html#distributions-used-in-testing)
+
+## $\chi^2$ distribution
+Link: [3.5.1  $\chi^2$ Distribution](https://bookdown.org/roback/bookdown-BeyondMLR/ch-distthry.html#chi2-distribution)
+
+* When might you use this distribution in a test? Come up with an example.
+
+* What R code can you use to explore the density of this distribution? Can you plot the distribution? Play with the parameters for yourself.
+
+```{r}
+# Use the 'd' version of the distribution function to get the values for each x value
+# This is is NOT simulating, this getting the exact values from the PDF
+
+x=seq(0,15,by=0.01)  # possible values
+prob1 <- dchisq(x,1)  # P(Y=y)
+prob2 <- dchisq(x,3)
+prob3 <- dchisq(x,7)
+prob4 <- dchisq(x,15)
+
+# this sets the data up for us
+chiDf <- tibble(x,prob1, prob2, prob3, prob4) %>%
+  rename(x = x,
+         `1` = prob1,
+         `3` = prob2,
+         `7` = prob3,
+         `15` = prob4) %>%
+  pivot_longer(-x, names_to = "Degrees of Freedom", values_to = "value") %>%
+  mutate(`Degrees of Freedom` = factor(`Degrees of Freedom`, 
+                                       levels = c("15", "7", "3", "1")))
+
+# plot
+ggplot(data = chiDf, 
+       aes(x = x, y = value, color = `Degrees of Freedom`)) +
+  geom_line(aes(linetype = `Degrees of Freedom`)) +
+  xlab("values") + ylab("density") + 
+  labs(title="Chi-squared Distributions") + 
+  xlim(-1,15) + ylim(0,.5) +
+  theme_minimal()
+```
+
+## Student’s $t$-distribution
+Link: [3.5.2 Student’s $t$-Distribution](https://bookdown.org/roback/bookdown-BeyondMLR/ch-distthry.html#students-t-distribution)
+
+* When might you use this distribution in a test? Come up with an example.
+
+* What R code can you use to explore the density of this distribution? Can you plot the distribution? Play with the parameters for yourself.
+
+```{r}
+?dt
+```
+
+
+## $F$-Distribution
+Link: [3.5.3  $F$-Distribution](https://bookdown.org/roback/bookdown-BeyondMLR/ch-distthry.html#f-distribution)
+]]
+
+* When might you use this distribution in a test? Come up with an example.
+
+* What R code can you use to explore the density of this distribution? Can you plot the distribution? Play with the parameters for yourself.
+
+```{r}
+?df
+```
+
